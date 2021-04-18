@@ -25,7 +25,7 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(chat.image),
+                  backgroundImage: AssetImage("assets/images/user.png"),
                 ),
                 if (chat.isActive)
                   Positioned(

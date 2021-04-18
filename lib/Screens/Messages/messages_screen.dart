@@ -1,12 +1,16 @@
 import 'package:chitchat_application/Screens/Messages/components/body.dart';
+import 'package:chitchat_application/models/chat.dart';
 import 'package:flutter/material.dart';
 
 class MessagesScreen extends StatelessWidget {
+  final Chat user;
+
+  const MessagesScreen({Key key, this.user}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: Body(),
+      body: Body(user),
     );
   }
 
@@ -16,19 +20,16 @@ class MessagesScreen extends StatelessWidget {
       title: Row(
         children: [
           BackButton(),
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/images/user_2.png'),
-          ),
-          SizedBox(width: 15 * 0.75),
+          SizedBox(width: 8 * 0.75),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Esther Howard",
-                style: TextStyle(fontSize: 16),
+                user.name,
+                style: TextStyle(fontSize: 14),
               ),
               Text(
-                "Active 3m ago",
+                "",
                 style: TextStyle(fontSize: 12),
               ),
             ],
@@ -44,7 +45,6 @@ class MessagesScreen extends StatelessWidget {
           icon: Icon(Icons.videocam),
           onPressed: () {},
         ),
-        SizedBox(width: 7.5),
       ],
     );
   }

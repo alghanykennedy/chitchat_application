@@ -2,6 +2,7 @@ import 'package:chitchat_application/Screens/Login/login_screen.dart';
 import 'package:chitchat_application/Screens/Signup/signup_screen.dart';
 import 'package:chitchat_application/Screens/Welcome/components/background.dart';
 import 'package:chitchat_application/components/rounded_button.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -30,28 +31,30 @@ class Body extends StatelessWidget {
               text: "LOGIN",
               style: raisedButtonStyle,
               press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return LoginScreen();
-                    },
-                  ),
-                );
+                Navigator.pushNamed(context, '/login');
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) {
+                //       return LoginScreen();
+                //     },
+                //   ),
+                // );
               },
             ),
             RoundedButton(
               text: "SIGNUP",
               style: secondButtonStyle,
               press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return SignUpScreen();
-                    },
-                  ),
-                );
+                Navigator.pushNamed(context, "/signup");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) {
+                //       return SignUpScreen();
+                //     },
+                //   ),
+                // );
               },
             )
           ],

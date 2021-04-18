@@ -1,6 +1,9 @@
 import 'package:chitchat_application/Screens/Chats/components/body.dart';
 import 'package:chitchat_application/constants.dart';
+import 'package:chitchat_application/cubit/auth_cubit.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -9,6 +12,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   int _selectedIndex = 1;
+  TextEditingController _emailController = TextEditingController();
+  String email;
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +21,56 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: buildAppBar(),
       body: Body(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+            barrierDismissible: true,
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                actions: [
+                  BlocBuilder<AuthCubit, AuthState>(
+                    builder: (_, state) {
+                      if (state is AuthLogin) {
+                        return TextButton(
+                          onPressed: () {
+                            final db = FirebaseDatabase()
+                                .reference()
+                                .child('chat_rooms')
+                                .push()
+                                .set({
+                              "user1": state.email,
+                              "user2": _emailController.text,
+                            });
+                            _emailController.text = "";
+                            Navigator.maybePop(context);
+
+                            return Text("Silahkan Login terlebih dahulu");
+                          },
+                          child: Text("Mulai Chat"),
+                        );
+                      }
+                    },
+                  ),
+                ],
+                title: Text("Tambah Chat"),
+                content: Container(
+                  child: TextField(
+                    controller: _emailController,
+                    onChanged: (value) {
+                      _emailController.text = value;
+                      setState(() {
+                        email = value;
+                      });
+                    },
+                    decoration: InputDecoration(hintText: "Masukan email"),
+                  ),
+                ),
+              );
+            },
+          );
+        },
         backgroundColor: kPrimaryColor,
-        child: Icon(Icons.person_add_alt_1),
+        child: Icon(Icons.add_comment_rounded),
       ),
       bottomNavigationBar: buildBottomNavigationBar(),
     );

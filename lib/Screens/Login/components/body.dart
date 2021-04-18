@@ -1,12 +1,15 @@
+import 'package:chitchat_application/Screens/Chats/chats_screen.dart';
 import 'package:chitchat_application/Screens/Login/components/background.dart';
 import 'package:chitchat_application/Screens/Signup/signup_screen.dart';
 import 'package:chitchat_application/components/already_have_an_account_check.dart';
 import 'package:chitchat_application/components/rounded_button.dart';
 import 'package:chitchat_application/components/rounded_input_field.dart';
 import 'package:chitchat_application/components/rounded_password_field.dart';
+import 'package:chitchat_application/cubit/auth_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Body extends StatefulWidget {
   const Body({
@@ -47,32 +50,43 @@ class _BodyState extends State<Body> {
             ),
             RoundedInputField(
               hintText: 'Email',
-              onChanged: (value) {},
+              onChanged: (value) {
+                _emailController.text = value;
+              },
             ),
             RoundedPasswordField(
-              onChanged: (value) {},
+              onChanged: (value) {
+                _passwordController.text = value;
+              },
             ),
-            RoundedButton(
-                text: 'LOGIN',
-                style: raisedButtonStyle,
-                press: () async {
-                  await _firebaseAuth.signInWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text);
-                }),
+            BlocListener<AuthCubit, AuthState>(
+              listener: (context, state) {
+                if (state is AuthLogin) {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/home', (route) => false);
+                } else if (state is AuthLoginFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.red[700],
+                      content: Text(state.message),
+                    ),
+                  );
+                }
+              },
+              child: RoundedButton(
+                  text: 'LOGIN',
+                  style: raisedButtonStyle,
+                  press: () {
+                    context.read<AuthCubit>().onLogin(
+                        _emailController.text, _passwordController.text);
+                  }),
+            ),
             SizedBox(
               height: size.height * 0.03,
             ),
             AlreadyHaveAnAccountCheck(
               press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return SignUpScreen();
-                    },
-                  ),
-                );
+                Navigator.pushNamed(context, "/signup");
               },
             )
           ],

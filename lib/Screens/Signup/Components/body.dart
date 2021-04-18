@@ -1,3 +1,4 @@
+import 'package:chitchat_application/Screens/Chats/welcome_to_chat_screen.dart';
 import 'package:chitchat_application/Screens/Login/login_screen.dart';
 import 'package:chitchat_application/Screens/Signup/Components/background.dart';
 import 'package:chitchat_application/Screens/Signup/Components/or_divider.dart';
@@ -7,6 +8,7 @@ import 'package:chitchat_application/components/rounded_button.dart';
 import 'package:chitchat_application/components/rounded_input_field.dart';
 import 'package:chitchat_application/components/rounded_password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -40,18 +42,51 @@ class _BodyState extends State<Body> {
             ),
             RoundedInputField(
               hintText: 'Your Email',
-              onChanged: (value) {},
+              onChanged: (value) {
+                _emailController.text = value;
+              },
             ),
             RoundedPasswordField(
-              onChanged: (value) {},
+              onChanged: (value) {
+                _passwordController.text = value;
+              },
             ),
             RoundedButton(
               text: 'SIGNUP',
               style: raisedButtonStyle,
               press: () async {
-                await _firebaseAuth.createUserWithEmailAndPassword(
+                try {
+                  // print(_emailController.text);
+                  final register =
+                      await _firebaseAuth.createUserWithEmailAndPassword(
                     email: _emailController.text,
-                    password: _passwordController.text);
+                    password: _passwordController.text,
+                  );
+                  final db =
+                      FirebaseDatabase().reference().child('user').push().set({
+                    "email": _emailController.text,
+                    "passwor": _passwordController.text,
+                  });
+                  print(db);
+                  // print(register);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => WelcomeChatScreen(),
+                    ),
+                  );
+                } on FirebaseAuthException catch (e) {
+                  print(e);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.red[700],
+                      content: Text(
+                        e.message ?? e.toString(),
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  print("error $e");
+                }
               },
             ),
             SizedBox(height: size.height * 0.02),
